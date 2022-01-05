@@ -1,27 +1,28 @@
 #include "request_queue.h"
 
 RequestQueue::RequestQueue(const SearchServer& search_server)
-	: server_(search_server)
+    : server_(search_server)
 {}
 
-std::vector<Document> RequestQueue::AddFindRequest(const std::string& raw_query, DocumentStatus statusDoc) {
-	return (AddFindRequest(raw_query,
-		[statusDoc](int document_id, DocumentStatus document_status, int rating) {
-			return document_status == statusDoc;
-		}));
+std::vector<Document> RequestQueue::AddFindRequest(const std::string& raw_query, DocumentStatus doc_status) {
+    return (AddFindRequest(raw_query,
+        [doc_status](int document_id, DocumentStatus document_status, int rating) {
+            return doc_status == document_status;
+        }));
 }
 
+// По условию если в сервер передается только строка запроса, мы ищем документы со статусом актуальные
 std::vector<Document> RequestQueue::AddFindRequest(const std::string& raw_query) {
-	return (AddFindRequest(raw_query,
-		[](int document_id, DocumentStatus document_status, int rating) {
-			return document_status == DocumentStatus::ACTUAL;
-		}));
+    return (AddFindRequest(raw_query,
+        [](int document_id, DocumentStatus document_status, int rating) {
+            return document_status == DocumentStatus::ACTUAL;
+        }));
 }
 
 int RequestQueue::GetNoResultRequests() const {
-	return (accumulate(requests_.begin(), requests_.end(), 0, [](int sum, const QueryResult& elem) {
-		if (elem.numOfResults == 0)
-			++sum;
-		return sum;
-		}));
+    return (accumulate(requests_.begin(), requests_.end(), 0, [](int sum, const QueryResult& elem) {
+        if (elem.numOfResults == 0)
+            ++sum;
+        return sum;
+        }));
 }

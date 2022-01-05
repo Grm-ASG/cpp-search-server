@@ -1,12 +1,13 @@
 #include "search_server.h"
+#include "ostream_overload.h"
 #include "request_queue.h"
 #include "string_processing.h"
 #include "read_input_functions.h"
 #include "unit_test.h"
 
-using namespace std;
-
 int main() {
+    using std::string_literals::operator""s;
+
     setlocale(LC_ALL, "Russian");
     try
     {
@@ -14,10 +15,10 @@ int main() {
     }
     catch (const std::exception& e)
     {
-        cout << e.what() << endl;
+        std::cout << e.what() << std::endl;
     }
     // Если вы видите эту строку, значит все тесты прошли успешно
-    cout << "Search server testing finished"s << endl;
+    std::cout << "Search server testing finished"s << std::endl;
 }
 
 //int main() {
