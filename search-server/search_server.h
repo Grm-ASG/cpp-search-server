@@ -173,4 +173,4 @@ std::vector<Document> SearchServer::FindAllDocuments(const Query& query, Documen
 		matched_documents.push_back({ document_id, relevance, documents_.at(document_id).rating });
 	}
 	return matched_documents;
-};
+}
