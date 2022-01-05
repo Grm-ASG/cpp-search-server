@@ -185,7 +185,7 @@ void MatchDocuments(const SearchServer& search_server, const std::string& query)
 [[nodiscard]] bool SearchServer::isSpecSimbOrIncorDash(const std::string& document) const
 {
 	bool isWord = false;
-	for (int i = 0; i < document.length(); i++)
+	for (size_t i = 0; i < document.length(); i++)
 	{
 		int ch = document[i];
 		bool isDash = document[i] == '-';
