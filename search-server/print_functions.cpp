@@ -2,7 +2,6 @@
 
 using std::string_literals::operator""s;
 
-
 void PrintDocument(const Document& document) {
     std::cout << "{ "s
         << "document_id = "s << document.id << ", "s
