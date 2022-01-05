@@ -1,9 +1,10 @@
 #include "unit_test.h"
 
+using std::string_literals::operator""s;
+
 void AssertImpl(bool value, const std::string& expr_str, const std::string& file, const std::string& func, unsigned line,
     const std::string& hint)
 {
-    using std::string_literals::operator""s;
     if (!value) {
         std::cerr << file << "("s << line << "s): "s << func << ": "s;
         std::cerr << "ASSERT("s << expr_str << "s) failed."s;
@@ -19,7 +20,6 @@ void AssertImpl(bool value, const std::string& expr_str, const std::string& file
 // Тест проверяет, что поисковая система исключает стоп-слова при добавлении документов
 void TestExcludeStopWordsFromAddedDocumentContent()
 {
-    using std::string_literals::operator""s;
     const int doc_id = 42;
     const std::string content = "cat in the city"s;
     const std::vector<int> ratings = { 1, 2, 3 };
@@ -42,7 +42,6 @@ void TestExcludeStopWordsFromAddedDocumentContent()
 // Тест проверяет что поисковая система исключает из выдачи документы со стоп словами
 void TestMinusWordsExcludeDocumentFromQuery(void)
 {
-    using std::string_literals::operator""s;
     SearchServer server;
 
     server.AddDocument(0, "Hello world"s, DocumentStatus::ACTUAL, { 5, 3, 10 }); // Avarage rating = 6
@@ -83,7 +82,6 @@ void TestMinusWordsExcludeDocumentFromQuery(void)
 // Тест проверки метода Matching
 void TestMatchingDocuments(void)
 {
-    using std::string_literals::operator""s;
     SearchServer server;
 
     server.AddDocument(0, "Hello world"s, DocumentStatus::ACTUAL, { 5, 3, 10 }); // Avarage rating = 6
@@ -141,7 +139,6 @@ void TestMatchingDocuments(void)
 // Тест выдачи релевантности запроса
 void TestSortingDocumentsWithRelevance(void)
 {
-    using std::string_literals::operator""s;
     SearchServer server;
     std::vector<std::string> documents = { "first document at server excel"s, "second document in system word"s, "third document of database adobe"s, "fourth document on configuration photoshop"s, "fifth document at test windows"s, "sixth document in server office"s, "seventh document of system linux"s, "eighth document on database plm"s, "ninth document at configuration cad"s, "tenth document in test solidworks"s, "eleventh document of server compas"s, "twelfth document on system excel"s, "thirteenth document at database word"s, "fourteenth document in configuration adobe"s, "fifteenth document of test photoshop"s, "sixteenth document on server windows"s };
 
@@ -158,7 +155,6 @@ void TestSortingDocumentsWithRelevance(void)
 // Тест проверки добавления документа
 void TestAddDocument(void)
 {
-    using std::string_literals::operator""s;
     SearchServer server;
 
     server.AddDocument(0, "Hello world"s, DocumentStatus::ACTUAL, { 5, 3, 10 }); // Avarage rating = 6
@@ -252,7 +248,6 @@ void TestAddDocument(void)
 // Проверка возврата правильного статуса документа
 void TestDocumentStatus(void)
 {
-    using std::string_literals::operator""s;
     SearchServer server;
 
     server.AddDocument(0, "Hello world"s, DocumentStatus::ACTUAL, { 5, 3, 10 }); // Avarage rating = 6
@@ -299,7 +294,6 @@ void TestDocumentStatus(void)
 
 void TestRatingCalculation(void)
 {
-    using std::string_literals::operator""s;
     SearchServer server;
     std::vector<int> test1 = { 1, 2, 3, 4, 5, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3 };
     std::vector<int> test2 = { 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62, 64, 66, 68, 70, 72, 74, 76, 78, 80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110, 112, 114, 116, 118, 120, 122, 124, 126, 128, 130, 132, 134, 136, 138, 140, 142, 144, 146, 148, 150, 152, 154, 156, 158, 160, 162, 164, 166, 168, 170, 172, 174, 176, 178 };
@@ -335,7 +329,6 @@ void TestRatingCalculation(void)
 // Тест корректного вычисления релевантности найденных документов.
 void TestCorrectRelevance(void)
 {
-    using std::string_literals::operator""s;
     SearchServer server;
     std::vector<std::string> documents = { "first document at server excel"s, "second document in system word"s, "third document of database adobe"s, "fourth document on configuration photoshop"s, "fifth document at test windows"s, "sixth document in server office"s, "seventh document of system linux"s, "eighth document on database plm"s, "ninth document at configuration cad"s, "tenth document in test solidworks"s, "eleventh document of server compas"s, "twelfth document on system excel"s, "thirteenth document at database word"s, "fourteenth document in configuration adobe"s, "fifteenth document of test photoshop"s, "sixteenth document on server windows"s };
 
@@ -359,7 +352,6 @@ void TestCorrectRelevance(void)
 // Тест Сортировка найденных документов по релевантности. Возвращаемые при поиске документов результаты должны быть отсортированы в порядке убывания
 void TestCorrectOrderRelevance(void)
 {
-    using std::string_literals::operator""s;
     SearchServer server;
     std::vector<std::string> documents = { "first document at server excel with some programms"s, "second document in system word and some execute files"s, "third document of database adobe"s, "fourth document on configuration photoshop"s, "fifth document at test windows"s, "sixth document in server office"s, "seventh document of system linux"s, "eighth document on database plm"s, "ninth document at configuration cad"s, "tenth document in test solidworks"s, "eleventh document of server compas"s, "twelfth document on system excel"s, "thirteenth document at database word"s, "fourteenth document in configuration adobe"s, "fifteenth document of test photoshop"s, "sixteenth document on server windows"s };
 
@@ -384,7 +376,6 @@ void TestCorrectOrderRelevance(void)
 // Тест Фильтрация результатов поиска с использованием предиката, задаваемого пользователем.
 void TestPredacateWorks(void)
 {
-    using std::string_literals::operator""s;
     SearchServer server;
     std::vector<std::string> documents = { "first document at server excel with some programms"s, "second document in system word and some execute files"s, "third document of database adobe"s, "fourth document on configuration photoshop"s, "fifth document at test windows"s, "sixth document in server office"s, "seventh document of system linux"s, "eighth document on database plm"s, "ninth document at configuration cad"s, "tenth document in test solidworks"s, "eleventh document of server compas"s, "twelfth document on system excel"s, "thirteenth document at database word"s, "fourteenth document in configuration adobe"s, "fifteenth document of test photoshop"s, "sixteenth document on server windows"s };
 
@@ -451,9 +442,9 @@ void TestPredacateWorks(void)
         }
     }
 }
+
 void TestCreateServerWithStopWords(void)
 {
-    using std::string_literals::operator""s;
     {// минус в конце
         try
         {

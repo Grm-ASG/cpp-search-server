@@ -1,12 +1,13 @@
 #include "print_functions.h"
 #include "search_server.h"
 
+using std::string_literals::operator""s;
+
 SearchServer::SearchServer(const std::string& stopWords) {
     SetStopWords(SplitIntoWords(stopWords));
 }
 
 void SearchServer::AddDocument(int document_id, const std::string& document, DocumentStatus status, const std::vector<int>& ratings) {
-    using std::string_literals::operator""s;
     std::string error = ""s;
     if (document_id < 0)
         error += "Неверный document_id - не может быть отрицательным числом\n"s;
@@ -45,7 +46,6 @@ int SearchServer::GetDocumentId(int index) const {
 }
 
 std::tuple<std::vector<std::string>, DocumentStatus> SearchServer::MatchDocument(const std::string& raw_query, int document_id) const {
-    using std::string_literals::operator""s;
     const auto query = ParseQuery(raw_query);
     std::string error = ""s;
     if (documents_.count(document_id) == 0)
@@ -87,7 +87,6 @@ std::tuple<std::vector<std::string>, DocumentStatus> SearchServer::MatchDocument
 
 [[nodiscard]] bool SearchServer::IsNotBreakMinusWord(const std::string& word) const
 {
-    using std::string_literals::operator""s;
     if (word == ""s)
         return false;
     if (word == "-"s || (word[0] == '-' && word[1] == '-'))
@@ -96,7 +95,6 @@ std::tuple<std::vector<std::string>, DocumentStatus> SearchServer::MatchDocument
 }
 
 std::vector<std::string> SearchServer::SplitIntoWordsNoStop(const std::string& text) const {
-    using std::string_literals::operator""s;
     std::vector<std::string> words;
     for (const std::string& word : SplitIntoWords(text)) {
         if (!IsValidWord(word)) {
@@ -118,7 +116,6 @@ int SearchServer::ComputeAverageRating(const std::vector<int>& ratings) {
 }
 
 SearchServer::QueryWord SearchServer::ParseQueryWord(const std::string& text) const {
-    using std::string_literals::operator""s;
     if (text.empty()) {
         throw std::invalid_argument("Query word is empty"s);
     }
@@ -157,7 +154,6 @@ double SearchServer::ComputeWordInverseDocumentFreq(const std::string& word) con
 
 void AddDocument(SearchServer& search_server, int document_id, const std::string& document, DocumentStatus status,
     const std::vector<int>& ratings) {
-    using std::string_literals::operator""s;
     try {
         search_server.AddDocument(document_id, document, status, ratings);
     }
@@ -167,7 +163,6 @@ void AddDocument(SearchServer& search_server, int document_id, const std::string
 }
 
 void FindTopDocuments(const SearchServer& search_server, const std::string& raw_query) {
-    using std::string_literals::operator""s;
     std::cout << "Результаты поиска по запросу: "s << raw_query << std::endl;
     try {
         for (const Document& document : search_server.FindTopDocuments(raw_query)) {
@@ -180,7 +175,6 @@ void FindTopDocuments(const SearchServer& search_server, const std::string& raw_
 }
 
 void MatchDocuments(const SearchServer& search_server, const std::string& query) {
-    using std::string_literals::operator""s;
     try {
         std::cout << "Матчинг документов по запросу: "s << query << std::endl;
         const int document_count = search_server.GetDocumentCount();

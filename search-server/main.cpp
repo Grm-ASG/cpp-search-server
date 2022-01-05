@@ -5,9 +5,9 @@
 #include "read_input_functions.h"
 #include "unit_test.h"
 
-int main() {
-    using std::string_literals::operator""s;
+using std::string_literals::operator""s;
 
+int main() {
     setlocale(LC_ALL, "Russian");
     try
     {
