@@ -15,8 +15,8 @@ void AssertImpl(bool value, const std::string& expr_str, const std::string& file
     }
 }
 
-// -------- РќР°С‡Р°Р»Рѕ РјРѕРґСѓР»СЊРЅС‹С… С‚РµСЃС‚РѕРІ РїРѕРёСЃРєРѕРІРѕР№ СЃРёСЃС‚РµРјС‹ ----------
-// РўРµСЃС‚ РїСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РїРѕРёСЃРєРѕРІР°СЏ СЃРёСЃС‚РµРјР° РёСЃРєР»СЋС‡Р°РµС‚ СЃС‚РѕРї-СЃР»РѕРІР° РїСЂРё РґРѕР±Р°РІР»РµРЅРёРё РґРѕРєСѓРјРµРЅС‚РѕРІ
+// -------- Начало модульных тестов поисковой системы ----------
+// Тест проверяет, что поисковая система исключает стоп-слова при добавлении документов
 void TestExcludeStopWordsFromAddedDocumentContent()
 {
     using std::string_literals::operator""s;
@@ -39,7 +39,7 @@ void TestExcludeStopWordsFromAddedDocumentContent()
     }
 }
 
-// РўРµСЃС‚ РїСЂРѕРІРµСЂСЏРµС‚ С‡С‚Рѕ РїРѕРёСЃРєРѕРІР°СЏ СЃРёСЃС‚РµРјР° РёСЃРєР»СЋС‡Р°РµС‚ РёР· РІС‹РґР°С‡Рё РґРѕРєСѓРјРµРЅС‚С‹ СЃРѕ СЃС‚РѕРї СЃР»РѕРІР°РјРё
+// Тест проверяет что поисковая система исключает из выдачи документы со стоп словами
 void TestMinusWordsExcludeDocumentFromQuery(void)
 {
     using std::string_literals::operator""s;
@@ -55,17 +55,17 @@ void TestMinusWordsExcludeDocumentFromQuery(void)
     ASSERT_EQUAL(document[i].id, 1);
     ASSERT_EQUAL(document[i].rating, -15);
     ASSERT_EQUAL(document[i].relevance, 0.23104906018664842);
-    ASSERT_EQUAL_HINT(document.size(), 1u, "РўРѕР»СЊРєРѕ 1 РґРѕРєСѓРјРµРЅС‚ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РЅР°Р№РґРµРЅ"s);
+    ASSERT_EQUAL_HINT(document.size(), 1u, "Только 1 документ должен быть найден"s);
     document.clear();
 
     document = server.FindTopDocuments("Hello -world"s);
-    ASSERT_HINT(document.empty(), "РќРµ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ РЅР°Р№РґРµРЅРЅС‹С… РґРѕРєСѓРјРµРЅС‚РѕРІ"s);
+    ASSERT_HINT(document.empty(), "Не должно быть найденных документов"s);
     document.clear();
 
     try
     {
         document = server.FindTopDocuments("Hello - world"s);
-        ASSERT_HINT(false, "Р”РѕР»Р¶РЅРѕ Р±С‹Р»Рѕ СЃСЂР°Р±РѕС‚Р°С‚СЊ РёСЃРєР»СЋС‡РµРЅРёРµ"s);
+        ASSERT_HINT(false, "Должно было сработать исключение"s);
     }
     catch (const std::exception&)
     {
@@ -73,14 +73,14 @@ void TestMinusWordsExcludeDocumentFromQuery(void)
     try
     {
         document = server.FindTopDocuments("Hello world -"s);
-        ASSERT_HINT(false, "Р”РѕР»Р¶РЅРѕ Р±С‹Р»Рѕ СЃСЂР°Р±РѕС‚Р°С‚СЊ РёСЃРєР»СЋС‡РµРЅРёРµ"s);
+        ASSERT_HINT(false, "Должно было сработать исключение"s);
     }
     catch (const std::exception&)
     {
     }
 }
 
-// РўРµСЃС‚ РїСЂРѕРІРµСЂРєРё РјРµС‚РѕРґР° Matching
+// Тест проверки метода Matching
 void TestMatchingDocuments(void)
 {
     using std::string_literals::operator""s;
@@ -101,7 +101,7 @@ void TestMatchingDocuments(void)
     testMatching = server.MatchDocument("Test query"s, 0);
     ASSERT(testMatching == testTuple);
 
-    {// РўРµСЃС‚ РїСѓСЃС‚РѕРіРѕ РІРѕР·РІСЂР°С‚Р° РїСЂРё РЅР°С…РѕР¶РґРµРЅРёРё РјРёРЅСѓСЃ СЃР»РѕРІР° Рё РІРµСЂРЅРѕРіРѕ СЃС‚Р°С‚СѓСЃР°
+    {// Тест пустого возврата при нахождении минус слова и верного статуса
         testMatching = server.MatchDocument("second the -world"s, 1);
         testTuple = { blankvectorOfWords, DocumentStatus::ACTUAL };
         ASSERT(testMatching == testTuple);
@@ -119,7 +119,7 @@ void TestMatchingDocuments(void)
         ASSERT(testMatching == testTuple);
     }
 
-    {// РўРµСЃС‚ РІРѕР·РІСЂР°С‚Р° СЃР»РѕРІ Рё СЃС‚Р°С‚СѓСЃРѕРІ
+    {// Тест возврата слов и статусов
         testMatching = server.MatchDocument("second The"s, 1);
         testTuple = { {"The"s, "second"s}, DocumentStatus::ACTUAL };
         ASSERT(testMatching == testTuple);
@@ -138,7 +138,7 @@ void TestMatchingDocuments(void)
     }
 }
 
-// РўРµСЃС‚ РІС‹РґР°С‡Рё СЂРµР»РµРІР°РЅС‚РЅРѕСЃС‚Рё Р·Р°РїСЂРѕСЃР°
+// Тест выдачи релевантности запроса
 void TestSortingDocumentsWithRelevance(void)
 {
     using std::string_literals::operator""s;
@@ -151,11 +151,11 @@ void TestSortingDocumentsWithRelevance(void)
     std::vector<Document> result = server.FindTopDocuments("excel word document in windows at execute some programms"s);
     int doc_size = static_cast<int>(result.size()) - 1;
     for (int i = 0; i < doc_size - 1; ++i) {
-        ASSERT_HINT(result[i].relevance >= result[i + 1].relevance, "РќРµРІРµСЂРЅР°СЏ СЃРѕСЂС‚РёСЂРѕРІРєР° СЂРµР»РёРІР°РЅС‚РЅРѕСЃС‚Рё РґРѕРєСѓРјРµРЅС‚Р°, i РґРѕРєСѓРјРµРЅС‚ РЅРµ РјРѕР¶РµС‚ РёРјРµС‚СЊ СЂРµР»РµРІР°РЅС‚РЅРѕСЃС‚СЊ РјРµРЅСЊС€Рµ РЅРёР¶РµСЃС‚РѕСЏС‰РµРіРѕ"s);
+        ASSERT_HINT(result[i].relevance >= result[i + 1].relevance, "Неверная сортировка реливантности документа, i документ не может иметь релевантность меньше нижестоящего"s);
     }
 }
 
-// РўРµСЃС‚ РїСЂРѕРІРµСЂРєРё РґРѕР±Р°РІР»РµРЅРёСЏ РґРѕРєСѓРјРµРЅС‚Р°
+// Тест проверки добавления документа
 void TestAddDocument(void)
 {
     using std::string_literals::operator""s;
@@ -204,9 +204,9 @@ void TestAddDocument(void)
     server.AddDocument(55, "Another correct document in server"s, DocumentStatus::ACTUAL, { 1, 2, 3 }); // Avarage rating = 2
 
     try
-    {// РўРµСЃС‚ РґРѕР±Р°РІР»РµРЅРёСЏ РґРѕРєСѓРјРµРЅС‚Р° СЃ СѓР¶Рµ РёРјРµСЋС‰РёРјСЃСЏ id
+    {// Тест добавления документа с уже имеющимся id
         server.AddDocument(55, "Another incorrect document in server"s, DocumentStatus::ACTUAL, { 1, 2, 3 }); // Avarage rating = 2
-        ASSERT_HINT(false, "Р”РѕР»Р¶РЅРѕ Р±С‹Р»Рѕ СЃСЂР°Р±РѕС‚Р°С‚СЊ РёСЃРєР»СЋС‡РµРЅРёРµ РїСЂРё РґРѕР±Р°РІР»РµРЅРёРё РґРѕРєСѓРјРµРЅС‚Р° СЃ РґСѓР±Р»РёСЂСѓСЋС‰РёРјСЃСЏ id"s);
+        ASSERT_HINT(false, "Должно было сработать исключение при добавлении документа с дублирующимся id"s);
     }
     catch (const std::exception&)
     {
@@ -215,7 +215,7 @@ void TestAddDocument(void)
     try
     {
         server.AddDocument(-42, "Another incorrect document in server"s, DocumentStatus::ACTUAL, { 1, 2, 3 }); // Avarage rating = 2
-        ASSERT_HINT(false, "Р”РѕР»Р¶РЅРѕ Р±С‹Р»Рѕ СЃСЂР°Р±РѕС‚Р°С‚СЊ РёСЃРєР»СЋС‡РµРЅРёРµ РїСЂРё РґРѕР±Р°РІР»РµРЅРёРё РґРѕРєСѓРјРµРЅС‚Р° СЃ РѕС‚СЂРёС†Р°С‚РµР»СЊРЅС‹Рј id"s);
+        ASSERT_HINT(false, "Должно было сработать исключение при добавлении документа с отрицательным id"s);
     }
     catch (const std::exception&)
     {
@@ -224,7 +224,7 @@ void TestAddDocument(void)
     try
     {
         server.AddDocument(42, "Another incorrect document in server -"s, DocumentStatus::ACTUAL, { 1, 2, 3 }); // Avarage rating = 2
-        ASSERT_HINT(false, "Р”РѕР»Р¶РЅРѕ Р±С‹Р»Рѕ СЃСЂР°Р±РѕС‚Р°С‚СЊ РёСЃРєР»СЋС‡РµРЅРёРµ РїСЂРё РґРѕР±Р°РІР»РµРЅРёРё РґРѕРєСѓРјРµРЅС‚Р° СЃ РЅРµРєРѕСЂСЂРµРєС‚РЅС‹Рј СЃС‚РѕРї-СЃР»РѕРІРѕРј"s);
+        ASSERT_HINT(false, "Должно было сработать исключение при добавлении документа с некорректным стоп-словом"s);
     }
     catch (const std::exception&)
     {
@@ -233,7 +233,7 @@ void TestAddDocument(void)
     try
     {
         server.AddDocument(442, "Another incorrect document in --server"s, DocumentStatus::ACTUAL, { 1, 2, 3 }); // Avarage rating = 2
-        ASSERT_HINT(false, "Р”РѕР»Р¶РЅРѕ Р±С‹Р»Рѕ СЃСЂР°Р±РѕС‚Р°С‚СЊ РёСЃРєР»СЋС‡РµРЅРёРµ РїСЂРё РґРѕР±Р°РІР»РµРЅРёРё РґРѕРєСѓРјРµРЅС‚Р° СЃ РЅРµРєРѕСЂСЂРµРєС‚РЅС‹Рј СЃС‚РѕРї-СЃР»РѕРІРѕРј"s);
+        ASSERT_HINT(false, "Должно было сработать исключение при добавлении документа с некорректным стоп-словом"s);
     }
     catch (const std::exception&)
     {
@@ -245,11 +245,11 @@ void TestAddDocument(void)
     }
     catch (const std::exception&)
     {
-        ASSERT_HINT(false, "РќРµ РґРѕР»Р¶РЅРѕ Р±С‹Р»Рѕ СЃСЂР°Р±РѕС‚Р°С‚СЊ РёСЃРєР»СЋС‡РµРЅРёРµ РїСЂРё РґРѕР±Р°РІР»РµРЅРёРё РґРѕРєСѓРјРµРЅС‚Р°"s);
+        ASSERT_HINT(false, "Не должно было сработать исключение при добавлении документа"s);
     }
 }
 
-// РџСЂРѕРІРµСЂРєР° РІРѕР·РІСЂР°С‚Р° РїСЂР°РІРёР»СЊРЅРѕРіРѕ СЃС‚Р°С‚СѓСЃР° РґРѕРєСѓРјРµРЅС‚Р°
+// Проверка возврата правильного статуса документа
 void TestDocumentStatus(void)
 {
     using std::string_literals::operator""s;
@@ -332,7 +332,7 @@ void TestRatingCalculation(void)
     }
 }
 
-// РўРµСЃС‚ РєРѕСЂСЂРµРєС‚РЅРѕРіРѕ РІС‹С‡РёСЃР»РµРЅРёСЏ СЂРµР»РµРІР°РЅС‚РЅРѕСЃС‚Рё РЅР°Р№РґРµРЅРЅС‹С… РґРѕРєСѓРјРµРЅС‚РѕРІ.
+// Тест корректного вычисления релевантности найденных документов.
 void TestCorrectRelevance(void)
 {
     using std::string_literals::operator""s;
@@ -356,7 +356,7 @@ void TestCorrectRelevance(void)
     ASSERT_EQUAL(result[4].relevance, 0.27725887222397810);
 }
 
-// РўРµСЃС‚ РЎРѕСЂС‚РёСЂРѕРІРєР° РЅР°Р№РґРµРЅРЅС‹С… РґРѕРєСѓРјРµРЅС‚РѕРІ РїРѕ СЂРµР»РµРІР°РЅС‚РЅРѕСЃС‚Рё. Р’РѕР·РІСЂР°С‰Р°РµРјС‹Рµ РїСЂРё РїРѕРёСЃРєРµ РґРѕРєСѓРјРµРЅС‚РѕРІ СЂРµР·СѓР»СЊС‚Р°С‚С‹ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ РѕС‚СЃРѕСЂС‚РёСЂРѕРІР°РЅС‹ РІ РїРѕСЂСЏРґРєРµ СѓР±С‹РІР°РЅРёСЏ
+// Тест Сортировка найденных документов по релевантности. Возвращаемые при поиске документов результаты должны быть отсортированы в порядке убывания
 void TestCorrectOrderRelevance(void)
 {
     using std::string_literals::operator""s;
@@ -377,11 +377,11 @@ void TestCorrectOrderRelevance(void)
 
     int doc_size = static_cast<int>(result.size()) - 1;
     for (int i = 0; i < doc_size - 1; ++i) {
-        ASSERT_HINT(result[i].relevance >= result[i + 1].relevance, "РќРµРІРµСЂРЅР°СЏ СЃРѕСЂС‚РёСЂРѕРІРєР° СЂРµР»РёРІР°РЅС‚РЅРѕСЃС‚Рё РґРѕРєСѓРјРµРЅС‚Р°, i РґРѕРєСѓРјРµРЅС‚ РЅРµ РјРѕР¶РµС‚ РёРјРµС‚СЊ СЂРµР»РµРІР°РЅС‚РЅРѕСЃС‚СЊ РјРµРЅСЊС€Рµ РЅРёР¶РµСЃС‚РѕСЏС‰РµРіРѕ"s);
+        ASSERT_HINT(result[i].relevance >= result[i + 1].relevance, "Неверная сортировка реливантности документа, i документ не может иметь релевантность меньше нижестоящего"s);
     }
 }
 
-// РўРµСЃС‚ Р¤РёР»СЊС‚СЂР°С†РёСЏ СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ РїРѕРёСЃРєР° СЃ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµРј РїСЂРµРґРёРєР°С‚Р°, Р·Р°РґР°РІР°РµРјРѕРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»РµРј.
+// Тест Фильтрация результатов поиска с использованием предиката, задаваемого пользователем.
 void TestPredacateWorks(void)
 {
     using std::string_literals::operator""s;
@@ -409,19 +409,19 @@ void TestPredacateWorks(void)
         int arrId[] = { 0, 12, 4, 8, 14 };
         for (size_t i = 0; i < 5; i++)
         {
-            ASSERT_EQUAL_HINT(result[i].id, arrId[i], "РќРµРІРµСЂРЅС‹Р№ ID РґРѕРєСѓРјРµРЅС‚Р° РїСЂРё РїСЂРµРґРёРєР°С‚РЅРѕРј РїРѕРёСЃРєРµ"s);
+            ASSERT_EQUAL_HINT(result[i].id, arrId[i], "Неверный ID документа при предикатном поиске"s);
         }
 
         int arrRating[] = { 10, 44, 16, 45, 39 };
         for (size_t i = 0; i < 5; i++)
         {
-            ASSERT_EQUAL_HINT(result[i].rating, arrRating[i], "РќРµРІРµСЂРЅС‹Р№ СЂРµР№С‚РёРЅРі РїСЂРё РїСЂРµРґРёРєР°С‚РЅРѕРј РїРѕРёСЃРєРµ"s);
+            ASSERT_EQUAL_HINT(result[i].rating, arrRating[i], "Неверный рейтинг при предикатном поиске"s);
         }
 
         double arrRelevance[] = { 1.0397207708399179, 0.69314718055994529, 0.69314718055994529, 0.27725887222397810, 0.0000000000000000 };
         for (size_t i = 0; i < 5; i++)
         {
-            ASSERT_EQUAL_HINT(result[i].relevance, arrRelevance[i], "РќРµРІРµСЂРЅР°СЏ СЂРµР»РµРІР°РЅС‚РЅРѕСЃС‚СЊ РїСЂРё РїСЂРµРґРёРєР°С‚РЅРѕРј РїРѕРёСЃРєРµ"s);
+            ASSERT_EQUAL_HINT(result[i].relevance, arrRelevance[i], "Неверная релевантность при предикатном поиске"s);
         }
     }
 
@@ -435,93 +435,93 @@ void TestPredacateWorks(void)
         int arrId[] = { 12, 15, 11, 13, 8 };
         for (size_t i = 0; i < 5; i++)
         {
-            ASSERT_EQUAL_HINT(result[i].id, arrId[i], "РќРµРІРµСЂРЅС‹Р№ ID РґРѕРєСѓРјРµРЅС‚Р° РїСЂРё РїСЂРµРґРёРєР°С‚РЅРѕРј РїРѕРёСЃРєРµ"s);
+            ASSERT_EQUAL_HINT(result[i].id, arrId[i], "Неверный ID документа при предикатном поиске"s);
         }
 
         int arrRating[] = { 44, 48, 44, 47, 45 };
         for (size_t i = 0; i < 5; i++)
         {
-            ASSERT_EQUAL_HINT(result[i].rating, arrRating[i], "РќРµРІРµСЂРЅС‹Р№ СЂРµР№С‚РёРЅРі РїСЂРё РїСЂРµРґРёРєР°С‚РЅРѕРј РїРѕРёСЃРєРµ"s);
+            ASSERT_EQUAL_HINT(result[i].rating, arrRating[i], "Неверный рейтинг при предикатном поиске"s);
         }
 
         double arrRelevance[] = { 0.69314718055994529, 0.41588830833596718, 0.41588830833596718, 0.27725887222397810, 0.27725887222397810 };
         for (size_t i = 0; i < 5; i++)
         {
-            ASSERT_EQUAL_HINT(result[i].relevance, arrRelevance[i], "РќРµРІРµСЂРЅР°СЏ СЂРµР»РµРІР°РЅС‚РЅРѕСЃС‚СЊ РїСЂРё РїСЂРµРґРёРєР°С‚РЅРѕРј РїРѕРёСЃРєРµ"s);
+            ASSERT_EQUAL_HINT(result[i].relevance, arrRelevance[i], "Неверная релевантность при предикатном поиске"s);
         }
     }
 }
 void TestCreateServerWithStopWords(void)
 {
     using std::string_literals::operator""s;
-    {// РјРёРЅСѓСЃ РІ РєРѕРЅС†Рµ
+    {// минус в конце
         try
         {
             SearchServer server("Bad minus words in the end -"s);
-            ASSERT_HINT(false, "Р”РѕР»Р¶РЅРѕ Р±С‹Р»Рѕ СЃСЂР°Р±РѕС‚Р°С‚СЊ РёСЃРєР»СЋС‡РµРЅРёРµ"s);
+            ASSERT_HINT(false, "Должно было сработать исключение"s);
         }
         catch (const std::exception&)
         {
         }
     }
 
-    {// РјРёРЅСѓСЃ РІ СЃРµСЂРµРґРёРЅРµ
+    {// минус в середине
         try
         {
             SearchServer server("Bad minus - words in the middle"s);
-            ASSERT_HINT(false, "Р”РѕР»Р¶РЅРѕ Р±С‹Р»Рѕ СЃСЂР°Р±РѕС‚Р°С‚СЊ РёСЃРєР»СЋС‡РµРЅРёРµ"s);
+            ASSERT_HINT(false, "Должно было сработать исключение"s);
         }
         catch (const std::exception&)
         {
         }
     }
 
-    {// РјРёРЅСѓСЃ РІ РЅР°С‡Р°Р»Рµ
+    {// минус в начале
         try
         {
             SearchServer server("- Bad minus words at the start"s);
-            ASSERT_HINT(false, "Р”РѕР»Р¶РЅРѕ Р±С‹Р»Рѕ СЃСЂР°Р±РѕС‚Р°С‚СЊ РёСЃРєР»СЋС‡РµРЅРёРµ"s);
+            ASSERT_HINT(false, "Должно было сработать исключение"s);
         }
         catch (const std::exception&)
         {
         }
     }
 
-    {// РјРёРЅСѓСЃ c РґРІРѕР№РЅС‹Рј --
+    {// минус c двойным --
         try
         {
             SearchServer server("Bad minus with double --word"s);
-            ASSERT_HINT(false, "Р”РѕР»Р¶РЅРѕ Р±С‹Р»Рѕ СЃСЂР°Р±РѕС‚Р°С‚СЊ РёСЃРєР»СЋС‡РµРЅРёРµ"s);
+            ASSERT_HINT(false, "Должно было сработать исключение"s);
         }
         catch (const std::exception&)
         {
         }
     }
 
-    {// РјРёРЅСѓСЃ c РґРІРѕР№РЅС‹Рј -- РєРѕСЂСЂРµРєС‚РЅС‹Рј
+    {// минус c двойным -- корректным
         try
         {
             SearchServer server("Good minus with double-- word"s);
         }
         catch (const std::exception&)
         {
-            ASSERT_HINT(false, "РќРµ РґРѕР»Р¶РЅРѕ Р±С‹Р»Рѕ СЃСЂР°Р±РѕС‚Р°С‚СЊ РёСЃРєР»СЋС‡РµРЅРёРµ"s);
+            ASSERT_HINT(false, "Не должно было сработать исключение"s);
         }
     }
 
-    {// РјРёРЅСѓСЃ c РґРІРѕР№РЅС‹Рј -- РєРѕСЂСЂРµРєС‚РЅС‹Рј
+    {// минус c двойным -- корректным
         try
         {
             SearchServer server("Good minus with dou-ble word"s);
         }
         catch (const std::exception&)
         {
-            ASSERT_HINT(false, "РќРµ РґРѕР»Р¶РЅРѕ Р±С‹Р»Рѕ СЃСЂР°Р±РѕС‚Р°С‚СЊ РёСЃРєР»СЋС‡РµРЅРёРµ"s);
+            ASSERT_HINT(false, "Не должно было сработать исключение"s);
         }
     }
 }
 
-// Р¤СѓРЅРєС†РёСЏ TestSearchServer СЏРІР»СЏРµС‚СЃСЏ С‚РѕС‡РєРѕР№ РІС…РѕРґР° РґР»СЏ Р·Р°РїСѓСЃРєР° С‚РµСЃС‚РѕРІ
+// Функция TestSearchServer является точкой входа для запуска тестов
 void TestSearchServer() {
     RUN_TEST(TestCreateServerWithStopWords);
     RUN_TEST(TestAddDocument);
@@ -535,4 +535,4 @@ void TestSearchServer() {
     RUN_TEST(TestCorrectOrderRelevance);
     RUN_TEST(TestPredacateWorks);
 }
-// --------- РћРєРѕРЅС‡Р°РЅРёРµ РјРѕРґСѓР»СЊРЅС‹С… С‚РµСЃС‚РѕРІ РїРѕРёСЃРєРѕРІРѕР№ СЃРёСЃС‚РµРјС‹ -----------
+// --------- Окончание модульных тестов поисковой системы -----------

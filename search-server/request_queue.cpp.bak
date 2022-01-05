@@ -11,7 +11,7 @@ std::vector<Document> RequestQueue::AddFindRequest(const std::string& raw_query,
         }));
 }
 
-// С•Рѕ СѓСЃР»РѕРІРёСЋ РµСЃР»Рё РІ СЃРµСЂРІРµСЂ РїРµСЂРµРґР°РµС‚СЃВ¤ С‚РѕР»СЊРєРѕ СЃС‚СЂРѕРєР° Р·Р°РїСЂРѕСЃР°, РјС‹ РёС‰РµРј РґРѕРєСѓРјРµРЅС‚С‹ СЃРѕ СЃС‚Р°С‚СѓСЃРѕРј Р°РєС‚СѓР°Р»СЊРЅС‹Рµ
+// По условию если в сервер передается только строка запроса, мы ищем документы со статусом актуальные
 std::vector<Document> RequestQueue::AddFindRequest(const std::string& raw_query) {
     return (AddFindRequest(raw_query,
         [](int document_id, DocumentStatus document_status, int rating) {

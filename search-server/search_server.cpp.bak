@@ -9,9 +9,9 @@ void SearchServer::AddDocument(int document_id, const std::string& document, Doc
     using std::string_literals::operator""s;
     std::string error = ""s;
     if (document_id < 0)
-        error += "РќРµРІРµСЂРЅС‹Р№ document_id - РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ РѕС‚СЂРёС†Р°С‚РµР»СЊРЅС‹Рј С‡РёСЃР»РѕРј\n"s;
+        error += "Неверный document_id - не может быть отрицательным числом\n"s;
     if (documents_.count(document_id) > 0)
-        error += "РќРµРІРµСЂРЅС‹Р№ document_id - РґРѕРєСѓРјРµРЅС‚ СЃ С‚Р°РєРёРј id СѓР¶Рµ РїСЂРёСЃСѓС‚СЃС‚РІСѓРµС‚ РІ РїРѕРёСЃРєРѕРІРѕР№ СЃРёСЃС‚РµРјРµ\n"s;
+        error += "Неверный document_id - документ с таким id уже присутствует в поисковой системе\n"s;
     if (error != ""s)
         throw std::invalid_argument(error);
 
@@ -49,7 +49,7 @@ std::tuple<std::vector<std::string>, DocumentStatus> SearchServer::MatchDocument
     const auto query = ParseQuery(raw_query);
     std::string error = ""s;
     if (documents_.count(document_id) == 0)
-        error += "РџСЂРё СЃСЂР°РІРЅРµРЅРёРё РґРѕРєСѓРјРµРЅС‚РѕРІ РЅРµ РЅР°Р№РґРµРЅ СЃРѕРѕС‚РІРµС‚СЃРІСѓСЋС‰РёР№ РґРѕРєСѓРјРµРЅС‚ РІ РїРѕРёСЃРєРѕРІРѕРј СЃРµСЂРІРµСЂРµ"s;
+        error += "При сравнении документов не найден соответсвующий документ в поисковом сервере"s;
     if (error != ""s)
         throw std::invalid_argument(error);
 
@@ -162,27 +162,27 @@ void AddDocument(SearchServer& search_server, int document_id, const std::string
         search_server.AddDocument(document_id, document, status, ratings);
     }
     catch (const std::invalid_argument& e) {
-        std::cout << "РћС€РёР±РєР° РґРѕР±Р°РІР»РµРЅРёСЏ РґРѕРєСѓРјРµРЅС‚Р° "s << document_id << ": "s << e.what() << std::endl;
+        std::cout << "Ошибка добавления документа "s << document_id << ": "s << e.what() << std::endl;
     }
 }
 
 void FindTopDocuments(const SearchServer& search_server, const std::string& raw_query) {
     using std::string_literals::operator""s;
-    std::cout << "Р РµР·СѓР»СЊС‚Р°С‚С‹ РїРѕРёСЃРєР° РїРѕ Р·Р°РїСЂРѕСЃСѓ: "s << raw_query << std::endl;
+    std::cout << "Результаты поиска по запросу: "s << raw_query << std::endl;
     try {
         for (const Document& document : search_server.FindTopDocuments(raw_query)) {
             PrintDocument(document);
         }
     }
     catch (const std::invalid_argument& e) {
-        std::cout << "РћС€РёР±РєР° РїРѕРёСЃРєР°: "s << e.what() << std::endl;
+        std::cout << "Ошибка поиска: "s << e.what() << std::endl;
     }
 }
 
 void MatchDocuments(const SearchServer& search_server, const std::string& query) {
     using std::string_literals::operator""s;
     try {
-        std::cout << "РњР°С‚С‡РёРЅРі РґРѕРєСѓРјРµРЅС‚РѕРІ РїРѕ Р·Р°РїСЂРѕСЃСѓ: "s << query << std::endl;
+        std::cout << "Матчинг документов по запросу: "s << query << std::endl;
         const int document_count = search_server.GetDocumentCount();
         for (int index = 0; index < document_count; ++index) {
             const int document_id = search_server.GetDocumentId(index);
@@ -191,6 +191,6 @@ void MatchDocuments(const SearchServer& search_server, const std::string& query)
         }
     }
     catch (const std::invalid_argument& e) {
-        std::cout << "РћС€РёР±РєР° РјР°С‚С‡РёРЅРіР° РґРѕРєСѓРјРµРЅС‚РѕРІ РЅР° Р·Р°РїСЂРѕСЃ "s << query << ": "s << e.what() << std::endl;
+        std::cout << "Ошибка матчинга документов на запрос "s << query << ": "s << e.what() << std::endl;
     }
 }
