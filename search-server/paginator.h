@@ -3,9 +3,10 @@
 #include "document.h"
 
 template <typename Iterator>
-class IteratorRange {
+class IteratorRange
+{
 public:
-    IteratorRange(Iterator begin, Iterator end);
+    IteratorRange( Iterator begin, Iterator end );
 
     Iterator begin() const;
     Iterator end() const;
@@ -18,8 +19,8 @@ private:
 };
 
 template <typename Iterator>
-IteratorRange<Iterator>::IteratorRange(Iterator begin, Iterator end)
-    : _begin(begin), _end(end)
+IteratorRange<Iterator>::IteratorRange( Iterator begin, Iterator end )
+    : _begin( begin ), _end( end )
 {
     _size = end - begin;
 }
@@ -43,9 +44,10 @@ size_t IteratorRange<Iterator>::size() const
 }
 
 template <typename Iterator>
-class Paginator {
+class Paginator
+{
 public:
-    Paginator(Iterator begin, Iterator end, size_t page_size);
+    Paginator( Iterator begin, Iterator end, size_t page_size );
 
     auto begin() const;
     auto end() const;
@@ -55,17 +57,17 @@ private:
 };
 
 template <typename Iterator>
-Paginator<Iterator>::Paginator(Iterator begin, Iterator end, size_t page_size)
+Paginator<Iterator>::Paginator( Iterator begin, Iterator end, size_t page_size )
 {
     const size_t numOfDocs = end - begin;
-    for (size_t i = 0; i < numOfDocs / page_size; i++)
+    for ( size_t i = 0; i < numOfDocs / page_size; i++ )
     {
-        _pages.push_back({ begin, begin + page_size });
-        std::advance(begin, page_size);
+        _pages.push_back( { begin, begin + page_size } );
+        std::advance( begin, page_size );
     }
-    if (begin < end)
+    if ( begin < end )
     {
-        _pages.push_back({ begin, end });
+        _pages.push_back( { begin, end } );
     }
 }
 
@@ -88,17 +90,19 @@ size_t Paginator<Iterator>::size() const
 }
 
 template <typename Container>
-auto Paginate(const Container& c, size_t page_size) {
-    return Paginator(begin(c), end(c), page_size);
+auto Paginate( const Container& c, size_t page_size )
+{
+    return Paginator( begin( c ), end( c ), page_size );
 }
 
 template <typename Iterator>
-std::ostream& operator<<(std::ostream& out, const IteratorRange<Iterator>& iter) {
-    for (Iterator ptr = iter.begin(); ptr < iter.end(); ++ptr)
+std::ostream& operator<<( std::ostream& out, const IteratorRange<Iterator>& iter )
+{
+    for ( Iterator ptr = iter.begin(); ptr < iter.end(); ++ptr )
     {
         out << "{ ";
         out << *ptr;
         out << " }";
     }
-    return (out);
+    return ( out );
 }

@@ -7,13 +7,14 @@
 
 using std::string_literals::operator""s;
 
-int main() {
-    setlocale(LC_ALL, "Russian");
+int main()
+{
+    setlocale( LC_ALL, "Russian" );
     try
     {
         TestSearchServer();
     }
-    catch (const std::exception& e)
+    catch ( const std::exception& e )
     {
         std::cout << e.what() << std::endl;
     }
@@ -32,7 +33,8 @@ int main() {
 //    search_server.AddDocument(5, "big dog sparrow Vasiliy"s, DocumentStatus::ACTUAL, { 1, 1, 1 });
 //
 //    // 1439 запросов с нулевым результатом
-//    for (int i = 0; i < 1439; ++i) {
+//    for (int i = 0; i < 1439; ++i)
+//    {
 //        request_queue.AddFindRequest("empty request"s);
 //    }
 //    // все еще 1439 запросов с нулевым результатом
