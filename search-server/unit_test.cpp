@@ -39,35 +39,6 @@ void TestExcludeStopWordsFromAddedDocumentContent()
         server.AddDocument( doc_id, content, DocumentStatus::ACTUAL, ratings );
         ASSERT_HINT( server.FindTopDocuments( "in"s ).empty(), "Stop words must be excluded from documents"s );
     }
-
-    SearchServer server;
-    server.AddDocument( doc_id, content, DocumentStatus::ACTUAL, ratings );
-    try
-    {
-        const auto found_docs = server.FindTopDocuments( "Another incorrect query in server -"s );
-        ASSERT_HINT( false, "Должно было сработать исключение при поиске документа с некорректным запросом"s );
-    }
-    catch ( const std::exception& )
-    {
-    }
-
-    try
-    {
-        const auto found_docs = server.FindTopDocuments( "Another incorrect query in --server"s );
-        ASSERT_HINT( false, "Должно было сработать исключение при поиске документа с некорректным запросом"s );
-    }
-    catch ( const std::exception& )
-    {
-    }
-
-    try
-    {
-        const auto found_docs = server.FindTopDocuments( "Another correct document-- in server"s );
-    }
-    catch ( const std::exception& )
-    {
-        ASSERT_HINT( false, "Не должно было сработать исключение при поиске документа с корректным запросом"s );
-    }
 }
 
 // Тест проверяет что поисковая система исключает из выдачи документы со стоп словами
@@ -165,6 +136,46 @@ void TestMatchingDocuments( void )
         testMatching = server.MatchDocument( "server Removed"s, 4 );
         testTuple = { {"Removed"s, "server"s}, DocumentStatus::REMOVED };
         ASSERT( testMatching == testTuple );
+    }
+
+    const int doc_id = 42;
+    const std::string content = "cat in the city"s;
+    const std::vector<int> ratings = { 1, 2, 3 };
+    server.AddDocument( doc_id, content, DocumentStatus::ACTUAL, ratings );
+    try
+    {
+        testMatching = server.MatchDocument( "Another incorrect query in server -"s, doc_id );
+        ASSERT_HINT( false, "Должно было сработать исключение при сравнении документа с некорректным запросом"s );
+    }
+    catch ( const std::exception& )
+    {
+    }
+
+    try
+    {
+        testMatching = server.MatchDocument( "Another \x1incorrect query in server"s, doc_id );
+        ASSERT_HINT( false, "Должно было сработать исключение при сравнении документа с некорректным запросом"s );
+    }
+    catch ( const std::exception& )
+    {
+    }
+
+    try
+    {
+        testMatching = server.MatchDocument( "Another incorrect query in --server"s, doc_id );
+        ASSERT_HINT( false, "Должно было сработать исключение при сравнении документа с некорректным запросом"s );
+    }
+    catch ( const std::exception& )
+    {
+    }
+
+    try
+    {
+        testMatching = server.MatchDocument( "Another correct document-- in server"s, doc_id );
+    }
+    catch ( const std::exception& )
+    {
+        ASSERT_HINT( false, "Не должно было сработать исключение при сравнении документа с корректным запросом"s );
     }
 }
 
@@ -530,6 +541,50 @@ void TestCreateServerWithStopWords( void )
     }
 }
 
+void TestThrowExeptionWithIncorrectQueryWithInFindTopDocuments( void )
+{
+    const int doc_id = 42;
+    const std::string content = "cat in the city"s;
+    const std::vector<int> ratings = { 1, 2, 3 };
+    SearchServer server;
+    server.AddDocument( doc_id, content, DocumentStatus::ACTUAL, ratings );
+    try
+    {
+        const auto found_docs = server.FindTopDocuments( "Another incorrect query in server -"s );
+        ASSERT_HINT( false, "Должно было сработать исключение при поиске документа с некорректным запросом"s );
+    }
+    catch ( const std::exception& )
+    {
+    }
+
+    try
+    {
+        const auto found_docs = server.FindTopDocuments( "Another \x1incorrect query in server"s );
+        ASSERT_HINT( false, "Должно было сработать исключение при поиске документа с некорректным запросом"s );
+    }
+    catch ( const std::exception& )
+    {
+    }
+
+    try
+    {
+        const auto found_docs = server.FindTopDocuments( "Another incorrect query in --server"s );
+        ASSERT_HINT( false, "Должно было сработать исключение при поиске документа с некорректным запросом"s );
+    }
+    catch ( const std::exception& )
+    {
+    }
+
+    try
+    {
+        const auto found_docs = server.FindTopDocuments( "Another correct document-- in server"s );
+    }
+    catch ( const std::exception& )
+    {
+        ASSERT_HINT( false, "Не должно было сработать исключение при поиске документа с корректным запросом"s );
+    }
+}
+
 // Функция TestSearchServer является точкой входа для запуска тестов
 void TestSearchServer()
 {
@@ -544,5 +599,6 @@ void TestSearchServer()
     RUN_TEST( TestCorrectRelevance );
     RUN_TEST( TestCorrectOrderRelevance );
     RUN_TEST( TestPredacateWorks );
+    RUN_TEST( TestThrowExeptionWithIncorrectQueryWithInFindTopDocuments );
 }
 // --------- Окончание модульных тестов поисковой системы -----------
