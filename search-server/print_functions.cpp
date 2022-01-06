@@ -23,11 +23,11 @@ void PrintMatchDocumentResult( int document_id, const std::vector<std::string>& 
     std::cout << "}"s << std::endl;
 }
 
-std::ostream& operator<<( std::ostream& out, const Document& doc )
+std::ostream& operator<<( std::ostream& out, const Document& document )
 {
-    out << "document_id = " << doc.id
-        << ", relevance = " << doc.relevance
-        << ", rating = " << doc.rating;
+    out << "document_id = " << document.id
+        << ", relevance = " << document.relevance
+        << ", rating = " << document.rating;
 
     return ( out );
 }

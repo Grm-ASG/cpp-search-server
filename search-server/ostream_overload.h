@@ -1,4 +1,9 @@
 #pragma once
+#include <utility>
+#include <vector>
+#include <set>
+#include <map>
+#include "print_functions.h"
 
 template <typename Key, typename Value>
 std::ostream& operator<<( std::ostream& out, const std::pair<Key, Value>& container )

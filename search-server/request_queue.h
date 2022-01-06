@@ -1,4 +1,10 @@
 #pragma once
+#include <string>
+#include <vector>
+#include <deque>
+#include <numeric>
+
+#include "document.h"
 #include "search_server.h"
 
 class RequestQueue

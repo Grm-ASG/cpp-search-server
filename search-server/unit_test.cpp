@@ -93,49 +93,49 @@ void TestMatchingDocuments( void )
     server.AddDocument( 3, "Another document in server"s, DocumentStatus::IRRELEVANT, { 1, 2, 3 } ); // Avarage rating = 2
     server.AddDocument( 4, "Removed doc in server"s, DocumentStatus::REMOVED, { 3, 10, 20 } ); // Avarage rating = 11
 
-    std::tuple<std::vector<std::string>, DocumentStatus> testTuple;
+    std::tuple<std::vector<std::string>, DocumentStatus> test_tuple;
     std::tuple<std::vector<std::string>, DocumentStatus> testMatching = server.MatchDocument( ""s, 0 );
 
-    ASSERT( testMatching == testTuple );
+    ASSERT( testMatching == test_tuple );
     std::vector<std::string> blankvectorOfWords;
 
     testMatching = server.MatchDocument( "Test query"s, 0 );
-    ASSERT( testMatching == testTuple );
+    ASSERT( testMatching == test_tuple );
 
     {// Тест пустого возврата при нахождении минус слова и верного статуса
         testMatching = server.MatchDocument( "second the -world"s, 1 );
-        testTuple = { blankvectorOfWords, DocumentStatus::ACTUAL };
-        ASSERT( testMatching == testTuple );
+        test_tuple = { blankvectorOfWords, DocumentStatus::ACTUAL };
+        ASSERT( testMatching == test_tuple );
 
         testMatching = server.MatchDocument( "third -in doc"s, 2 );
-        testTuple = { blankvectorOfWords, DocumentStatus::BANNED };
-        ASSERT( testMatching == testTuple );
+        test_tuple = { blankvectorOfWords, DocumentStatus::BANNED };
+        ASSERT( testMatching == test_tuple );
 
         testMatching = server.MatchDocument( "-Another document"s, 3 );
-        testTuple = { blankvectorOfWords, DocumentStatus::IRRELEVANT };
-        ASSERT( testMatching == testTuple );
+        test_tuple = { blankvectorOfWords, DocumentStatus::IRRELEVANT };
+        ASSERT( testMatching == test_tuple );
 
         testMatching = server.MatchDocument( "server -Removed"s, 4 );
-        testTuple = { blankvectorOfWords, DocumentStatus::REMOVED };
-        ASSERT( testMatching == testTuple );
+        test_tuple = { blankvectorOfWords, DocumentStatus::REMOVED };
+        ASSERT( testMatching == test_tuple );
     }
 
     {// Тест возврата слов и статусов
         testMatching = server.MatchDocument( "second The"s, 1 );
-        testTuple = { {"The"s, "second"s}, DocumentStatus::ACTUAL };
-        ASSERT( testMatching == testTuple );
+        test_tuple = { {"The"s, "second"s}, DocumentStatus::ACTUAL };
+        ASSERT( testMatching == test_tuple );
 
         testMatching = server.MatchDocument( "Third in doc"s, 2 );
-        testTuple = { {"Third"s, "doc"s, "in"s}, DocumentStatus::BANNED };
-        ASSERT( testMatching == testTuple );
+        test_tuple = { {"Third"s, "doc"s, "in"s}, DocumentStatus::BANNED };
+        ASSERT( testMatching == test_tuple );
 
         testMatching = server.MatchDocument( "Another document"s, 3 );
-        testTuple = { {"Another"s, "document"s}, DocumentStatus::IRRELEVANT };
-        ASSERT( testMatching == testTuple );
+        test_tuple = { {"Another"s, "document"s}, DocumentStatus::IRRELEVANT };
+        ASSERT( testMatching == test_tuple );
 
         testMatching = server.MatchDocument( "server Removed"s, 4 );
-        testTuple = { {"Removed"s, "server"s}, DocumentStatus::REMOVED };
-        ASSERT( testMatching == testTuple );
+        test_tuple = { {"Removed"s, "server"s}, DocumentStatus::REMOVED };
+        ASSERT( testMatching == test_tuple );
     }
 
     const int doc_id = 42;
@@ -362,12 +362,12 @@ void TestCorrectRelevance( void )
 
     for ( size_t i = 0; i < 16; i++ )
     {
-        std::vector<int> ratingVec = { 10 };
+        std::vector<int> rating_vector = { 10 };
         for ( size_t j = 0; j < i; j++ )
         {
-            ratingVec.push_back( ( ( j + 1 ) * ( i + 3 ) % 100 ) );
+            rating_vector.push_back( ( ( j + 1 ) * ( i + 3 ) % 100 ) );
         }
-        server.AddDocument( static_cast< int >( i ), documents[i], DocumentStatus::ACTUAL, ratingVec );
+        server.AddDocument( static_cast< int >( i ), documents[i], DocumentStatus::ACTUAL, rating_vector );
     }
     std::vector<Document> result = server.FindTopDocuments( "excel word document in"s, DocumentStatus::ACTUAL );
     ASSERT_EQUAL( result[0].relevance, 0.69314718055994529 );
@@ -385,12 +385,12 @@ void TestCorrectOrderRelevance( void )
 
     for ( size_t i = 0; i < 16; i++ )
     {
-        std::vector<int> ratingVec = { 10 };
+        std::vector<int> rating_vector = { 10 };
         for ( size_t j = 0; j < i; j++ )
         {
-            ratingVec.push_back( ( ( j + 1 ) * ( i + 3 ) % 100 ) );
+            rating_vector.push_back( ( ( j + 1 ) * ( i + 3 ) % 100 ) );
         }
-        server.AddDocument( static_cast< int >( i ), documents[i], DocumentStatus::ACTUAL, ratingVec );
+        server.AddDocument( static_cast< int >( i ), documents[i], DocumentStatus::ACTUAL, rating_vector );
     }
 
     std::vector<Document> result = server.FindTopDocuments( "excel word document in windows at execute some programms", DocumentStatus::ACTUAL );
@@ -410,12 +410,12 @@ void TestPredacateWorks( void )
 
     for ( size_t i = 0; i < 16; i++ )
     {
-        std::vector<int> ratingVec = { 10 };
+        std::vector<int> rating_vector = { 10 };
         for ( size_t j = 0; j < i; j++ )
         {
-            ratingVec.push_back( ( ( j + 1 ) * ( i + 3 ) % 100 ) );
+            rating_vector.push_back( ( ( j + 1 ) * ( i + 3 ) % 100 ) );
         }
-        server.AddDocument( static_cast< int >( i ), documents[i], DocumentStatus::ACTUAL, ratingVec );
+        server.AddDocument( static_cast< int >( i ), documents[i], DocumentStatus::ACTUAL, rating_vector );
     }
 
     std::vector<Document> result;

@@ -1,4 +1,5 @@
 #pragma once
-#include "search_server.h"
+#include <string>
+#include <vector>
 
 std::vector<std::string> SplitIntoWords( const std::string& text );

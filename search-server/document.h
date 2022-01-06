@@ -10,8 +10,8 @@ enum class DocumentStatus
 
 struct Document
 {
-    Document ();
-    Document ( int id, double relevance, int rating );
+    Document();
+    Document( int id, double relevance, int rating );
 
     int     id;
     double  relevance;

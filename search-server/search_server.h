@@ -1,21 +1,20 @@
 #pragma once
 #include <vector>
-#include <iostream>
-#include <algorithm>
-#include <deque>
-#include <cmath>
-#include <iostream>
-#include <map>
-#include <set>
-#include <stdexcept>
-#include <numeric>
 #include <string>
-#include <utility>
-#include <vector>
+#include <set>
+#include <map>
+#include <algorithm>
+#include <iostream>
+#include <numeric>
+#include <cmath>
 
 #include "document.h"
-#include "string_processing.h"
+#include "ostream_overload.h"
 #include "paginator.h"
+#include "print_functions.h"
+#include "read_input_functions.h"
+#include "string_processing.h"
+#include "unit_test.h"
 
 const int MAX_RESULT_DOCUMENT_COUNT = 5;
 const double DEVIATION = 1e-6;

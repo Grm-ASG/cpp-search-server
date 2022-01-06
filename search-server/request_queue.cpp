@@ -20,12 +20,12 @@ std::vector<Document> RequestQueue::AddFindRequest( const std::string& raw_query
 
 int RequestQueue::GetNoResultRequests() const
 {
-    return ( accumulate( requests_.begin(), requests_.end(), 0, [] ( int sum, const QueryResult& elem )
-                         {
-                             if ( elem.numOfResults == 0 )
-                             {
-                                 ++sum;
-                             }
-                             return sum;
-                         } ) );
+    return ( std::accumulate( requests_.begin(), requests_.end(), 0, [] ( int sum, const QueryResult& elem )
+                              {
+                                  if ( elem.numOfResults == 0 )
+                                  {
+                                      ++sum;
+                                  }
+                                  return sum;
+                              } ) );
 }

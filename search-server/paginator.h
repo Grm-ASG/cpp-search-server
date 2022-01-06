@@ -1,6 +1,5 @@
 #pragma once
-#include "search_server.h"
-#include "document.h"
+#include <ostream>
 
 template <typename Iterator>
 class IteratorRange

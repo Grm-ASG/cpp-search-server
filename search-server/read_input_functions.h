@@ -1,5 +1,6 @@
 #pragma once
-#include "search_server.h"
+#include <string>
+#include <iostream>
 
 std::string ReadLine();
 int ReadLineWithNumber();
