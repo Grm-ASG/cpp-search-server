@@ -29,6 +29,7 @@ void SearchServer::AddDocument( int document_id, const std::string& document, Do
     for ( const std::string& word : words )
     {
         word_to_document_freqs_[word][document_id] += inv_word_count;
+        document_to_word_freqs_[document_id][word] += inv_word_count;
     }
     documents_.emplace( document_id, DocumentData{ ComputeAverageRating( ratings ), status } );
     document_ids_.push_back( document_id );
@@ -51,11 +52,6 @@ std::vector<Document> SearchServer::FindTopDocuments( const std::string& raw_que
 int SearchServer::GetDocumentCount() const
 {
     return documents_.size();
-}
-
-int SearchServer::GetDocumentId( int index ) const
-{
-    return document_ids_.at( index );
 }
 
 std::tuple<std::vector<std::string>, DocumentStatus> SearchServer::MatchDocument( const std::string& raw_query, int document_id ) const
@@ -210,7 +206,7 @@ void FindTopDocuments( const SearchServer& search_server, const std::string& raw
     }
 }
 
-void MatchDocuments( const SearchServer& search_server, const std::string& query )
+void MatchDocuments( const SearchServer& search_server, const std::string& query ) //TODO Check if we didn't find the document with index, maybe throw exeption
 {
     try
     {
@@ -218,7 +214,9 @@ void MatchDocuments( const SearchServer& search_server, const std::string& query
         const int document_count = search_server.GetDocumentCount();
         for ( int index = 0; index < document_count; ++index )
         {
-            const int document_id = search_server.GetDocumentId( index );
+            const auto end_iter = search_server.end();
+            const auto iter = std::find(search_server.begin(), end_iter, index);
+            const int document_id = iter < end_iter ? *iter : -1;
             const auto [words, status] = search_server.MatchDocument( query, document_id );
             PrintMatchDocumentResult( document_id, words, status );
         }
@@ -228,3 +226,50 @@ void MatchDocuments( const SearchServer& search_server, const std::string& query
         std::cout << "Ошибка матчинга документов на запрос "s << query << ": "s << e.what() << std::endl;
     }
 }
+
+std::vector<int>::const_iterator SearchServer::begin() const
+{
+    return document_ids_.cbegin();
+}
+
+std::vector<int>::const_iterator SearchServer::end() const
+{
+    return document_ids_.cend();
+}
+
+const std::map<std::string, double>& SearchServer::GetWordFrequencies(int document_id) const
+{
+    const auto iter_to_doc = document_to_word_freqs_.find(document_id);
+    const static std::map<std::string, double> dummy;
+    if (iter_to_doc == document_to_word_freqs_.end())
+        return dummy;
+    return (*iter_to_doc).second;
+}
+
+void SearchServer::RemoveDocument(int document_id)
+    {
+        {
+            const auto end_of_vec = document_ids_.end();
+            auto element_to_delete = std::find(document_ids_.begin(), end_of_vec, document_id);
+            if (element_to_delete != end_of_vec)
+                document_ids_.erase(element_to_delete);
+        }
+
+        {
+            auto element_to_delete = documents_.find(document_id);
+            if (element_to_delete != documents_.end())
+                documents_.erase(element_to_delete);
+        }
+        
+        {
+            auto element_to_delete = document_to_word_freqs_.find(document_id);
+            if (element_to_delete != document_to_word_freqs_.end())
+            {
+                for(auto [word, freq] : (*element_to_delete).second)
+                {
+                    word_to_document_freqs_.at(word).erase(document_id);
+                }
+                document_to_word_freqs_.erase(element_to_delete);
+            }
+        }
+    }

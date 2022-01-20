@@ -1,12 +1,4 @@
 #pragma once
-#include <vector>
-#include <string>
-#include <set>
-#include <map>
-#include <algorithm>
-#include <iostream>
-#include <numeric>
-#include <cmath>
 
 #include "document.h"
 #include "ostream_overload.h"
@@ -14,7 +6,17 @@
 #include "print_functions.h"
 #include "read_input_functions.h"
 #include "string_processing.h"
-#include "unit_test.h"
+
+#include <vector>
+#include <string>
+#include <set>
+#include <map>
+#include <iterator>
+#include <algorithm>
+#include <iostream>
+#include <numeric>
+#include <cmath>
+
 
 const int MAX_RESULT_DOCUMENT_COUNT = 5;
 const double DEVIATION = 1e-6;
@@ -36,10 +38,13 @@ public:
     std::vector<Document> FindTopDocuments( const std::string& raw_query, DocumentStatus status ) const;
     std::vector<Document> FindTopDocuments( const std::string& raw_query ) const;
 
-    int GetDocumentCount() const;
-    int GetDocumentId( int index ) const;
+    std::vector<int>::const_iterator begin() const; //TODO TESTS
+    std::vector<int>::const_iterator end() const; //TODO TESTS
 
+    int GetDocumentCount() const;
     std::tuple<std::vector<std::string>, DocumentStatus> MatchDocument( const std::string& raw_query, int document_id ) const;
+    const std::map<std::string, double>& GetWordFrequencies(int document_id) const; //TODO TESTS
+    void RemoveDocument(int document_id);
 private:
     struct DocumentData
     {
@@ -62,6 +67,7 @@ private:
 
     std::set<std::string> stop_words_;
     std::map<std::string, std::map<int, double>> word_to_document_freqs_;
+    std::map<int, std::map<std::string, double>> document_to_word_freqs_;
     std::map<int, DocumentData> documents_;
     std::vector<int> document_ids_;
 
