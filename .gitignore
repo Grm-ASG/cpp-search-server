@@ -33,6 +33,7 @@
 *.a
 
 # VS
-.vs
+*.vs*
 
+*.idea
 *.bak
