@@ -585,6 +585,98 @@ void TestThrowExeptionWithIncorrectQueryWithInFindTopDocuments( void )
     }
 }
 
+void TestBeginEndIterators(void)
+{
+    const int doc_id = 42;
+    const std::string content = "cat in the city"s;
+    const std::vector<int> ratings = { 1, 2, 3 };
+    SearchServer search_server;
+    search_server.AddDocument( doc_id, content, DocumentStatus::ACTUAL, ratings );
+
+    for (const int document_id : search_server)
+    {
+        ASSERT(document_id == doc_id);
+    }
+
+    std::vector<int>::const_iterator begin_iter = search_server.begin();
+    std::vector<int>::const_iterator end_iter = search_server.end();
+
+    ASSERT(std::next(begin_iter) == end_iter);
+    ASSERT(std::prev(end_iter) == begin_iter);
+}
+
+void TestGetWordFrequencies(void)
+{
+    const int doc_id = 42;
+    const std::string content = "cat in the city"s;
+    const std::vector<int> ratings = { 1, 2, 3 };
+    SearchServer search_server;
+    search_server.AddDocument( doc_id, content, DocumentStatus::ACTUAL, ratings );
+    std::map<std::string, double> to_compare;
+
+    {
+        auto res = search_server.GetWordFrequencies(1);
+        ASSERT(res == to_compare);
+    }
+
+    {
+        auto res = search_server.GetWordFrequencies(42);
+        to_compare.insert({ {"cat", 0.25f},
+                            {"city", 0.25f},
+                            {"in", 0.25f},
+                            {"the", 0.25f}});
+        ASSERT(res == to_compare);
+    }
+}
+
+void TestRemoveDocument(void)
+{
+    const int doc_id = 42;
+    const std::string content = "cat in the city"s;
+    const std::vector<int> ratings = { 1, 2, 3 };
+    SearchServer search_server;
+    search_server.AddDocument( doc_id, content, DocumentStatus::ACTUAL, ratings );
+
+    ASSERT_EQUAL(search_server.GetDocumentCount(), 1);
+    search_server.RemoveDocument(0);
+    ASSERT_EQUAL(search_server.GetDocumentCount(), 1);
+    search_server.RemoveDocument(42);
+    ASSERT_EQUAL(search_server.GetDocumentCount(), 0);
+}
+
+void TestRemoveDuplicates(void)
+{
+    SearchServer search_server("and with"s);
+
+    AddDocument(search_server, 1, "funny pet and nasty rat"s, DocumentStatus::ACTUAL, {7, 2, 7});
+    AddDocument(search_server, 2, "funny pet with curly hair"s, DocumentStatus::ACTUAL, {1, 2});
+
+    // дубликат документа 2, будет удалён
+    AddDocument(search_server, 3, "funny pet with curly hair"s, DocumentStatus::ACTUAL, {1, 2});
+
+    // отличие только в стоп-словах, считаем дубликатом
+    AddDocument(search_server, 4, "funny pet and curly hair"s, DocumentStatus::ACTUAL, {1, 2});
+
+    // множество слов такое же, считаем дубликатом документа 1
+    AddDocument(search_server, 5, "funny funny pet and nasty nasty rat"s, DocumentStatus::ACTUAL, {1, 2});
+
+    // добавились новые слова, дубликатом не является
+    AddDocument(search_server, 6, "funny pet and not very nasty rat"s, DocumentStatus::ACTUAL, {1, 2});
+
+    // множество слов такое же, как в id 6, несмотря на другой порядок, считаем дубликатом
+    AddDocument(search_server, 7, "very nasty rat and not very funny pet"s, DocumentStatus::ACTUAL, {1, 2});
+
+    // есть не все слова, не является дубликатом
+    AddDocument(search_server, 8, "pet with rat and rat and rat"s, DocumentStatus::ACTUAL, {1, 2});
+
+    // слова из разных документов, не является дубликатом
+    AddDocument(search_server, 9, "nasty rat with curly hair"s, DocumentStatus::ACTUAL, {1, 2});
+    
+    std::cerr << "Before duplicates removed: "s << search_server.GetDocumentCount() << std::endl;
+    RemoveDuplicates(search_server);
+    std::cerr << "After duplicates removed: "s << search_server.GetDocumentCount() << std::endl;
+}
+
 // Функция TestSearchServer является точкой входа для запуска тестов
 void TestSearchServer()
 {
@@ -600,5 +692,9 @@ void TestSearchServer()
     RUN_TEST( TestCorrectOrderRelevance );
     RUN_TEST( TestPredacateWorks );
     RUN_TEST( TestThrowExeptionWithIncorrectQueryWithInFindTopDocuments );
+    RUN_TEST( TestBeginEndIterators );
+    RUN_TEST( TestGetWordFrequencies );
+    RUN_TEST( TestRemoveDocument );
+    RUN_TEST( TestRemoveDuplicates );
 }
 // --------- Окончание модульных тестов поисковой системы -----------
