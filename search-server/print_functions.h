@@ -1,5 +1,7 @@
 #pragma once
+
 #include "document.h"
+
 #include <vector>
 #include <iostream>
 

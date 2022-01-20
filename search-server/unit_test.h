@@ -1,12 +1,14 @@
 #pragma once
+
+#include "paginator.h"
+#include "document.h"
+#include "remove_duplicates.h"
+#include "search_server.h"
+
 #include <vector>
 #include <string>
 #include <iostream>
 #include <tuple>
-
-#include "paginator.h"
-#include "document.h"
-#include "search_server.h"
 
 #define ASSERT_EQUAL(a, b) AssertEqualImpl((a), (b), #a, #b, __FILE__, __FUNCTION__, __LINE__, ""s)
 #define ASSERT_EQUAL_HINT(a, b, hint) AssertEqualImpl((a), (b), #a, #b, __FILE__, __FUNCTION__, __LINE__, (hint))
