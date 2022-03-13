@@ -43,7 +43,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>ClangCL</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -152,7 +152,9 @@
     <ClCompile Include="test_example_functions.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="concurrent_map.h" />
     <ClInclude Include="document.h" />
+    <ClInclude Include="log_duration.h" />
     <ClInclude Include="paginator.h" />
     <ClInclude Include="process_queries.h" />
     <ClInclude Include="read_input_functions.h" />

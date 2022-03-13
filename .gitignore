@@ -37,3 +37,6 @@
 
 *.idea
 *.bak
+log/*
+x64*
+Debug*

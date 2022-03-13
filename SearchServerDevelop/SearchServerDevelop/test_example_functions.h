@@ -10,6 +10,8 @@
 #include <iostream>
 #include <tuple>
 
+using std::string_literals::operator""s;
+
 #define ASSERT_EQUAL(a, b) AssertEqualImpl((a), (b), #a, #b, __FILE__, __FUNCTION__, __LINE__, ""s)
 #define ASSERT_EQUAL_HINT(a, b, hint) AssertEqualImpl((a), (b), #a, #b, __FILE__, __FUNCTION__, __LINE__, (hint))
 #define ASSERT(expr) AssertImpl(!!(expr), #expr, __FILE__, __FUNCTION__, __LINE__, ""s)
@@ -22,7 +24,6 @@ template <typename T, typename U>
 void AssertEqualImpl( const T& t, const U& u, const std::string& t_str, const std::string& u_str, const std::string& file,
                       const std::string& func, unsigned line, const std::string& hint )
 {
-    using std::string_literals::operator""s;
     if ( t != u )
     {
         std::cerr << std::boolalpha;
@@ -44,7 +45,6 @@ void AssertImpl( bool value, const std::string& expr_str, const std::string& fil
 template <typename Function>
 void RunTestImpl( Function func, const std::string& funcName )
 {
-    using std::string_literals::operator""s;
     func();
     std::cerr << funcName << " OK"s << std::endl;
 }
