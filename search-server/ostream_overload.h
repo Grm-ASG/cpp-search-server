@@ -8,37 +8,37 @@
 #include <map>
 
 template <typename Key, typename Value>
-std::ostream& operator<<( std::ostream& out, const std::pair<Key, Value>& container )
+std::ostream& operator<<(std::ostream& out, const std::pair<Key, Value>& container)
 {
-    out << container.first;
-    out << ": ";
-    out << container.second;
-    return ( out );
+	out << container.first;
+	out << ": ";
+	out << container.second;
+	return (out);
 }
 
 template <typename Term>
-std::ostream& operator<<( std::ostream& out, const std::vector<Term>& container )
+std::ostream& operator<<(std::ostream& out, const std::vector<Term>& container)
 {
-    out << '[';
-    Print( out, container );
-    out << ']';
-    return ( out );
+	out << '[';
+	Print(out, container);
+	out << ']';
+	return (out);
 }
 
 template <typename Term>
-std::ostream& operator<<( std::ostream& out, const std::set<Term>& container )
+std::ostream& operator<<(std::ostream& out, const std::set<Term>& container)
 {
-    out << '{';
-    Print( out, container );
-    out << '}';
-    return ( out );
+	out << '{';
+	Print(out, container);
+	out << '}';
+	return (out);
 }
 
 template <typename Key, typename Value>
-std::ostream& operator<<( std::ostream& out, const std::map<Key, Value>& container )
+std::ostream& operator<<(std::ostream& out, const std::map<Key, Value>& container)
 {
-    out << '{';
-    Print( out, container );
-    out << '}';
-    return ( out );
+	out << '{';
+	Print(out, container);
+	out << '}';
+	return (out);
 }
