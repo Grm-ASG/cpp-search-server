@@ -14,14 +14,14 @@ void RemoveDuplicates(SearchServer& search_server)
 		{
 			words.insert(word);
 		}
-		doc_to_del[words].push_back(document_id);
-	}
-
-	for (auto doc : doc_to_del)
-	{
-		if (doc.second.size() > 1)
+		
+		if (doc_to_del.count(words) == 0)
 		{
-			remove_docs.insert(std::next(doc.second.begin()), doc.second.end());
+			doc_to_del[words].push_back(document_id);
+		}
+		else
+		{
+			remove_docs.insert(document_id);
 		}
 	}
 
