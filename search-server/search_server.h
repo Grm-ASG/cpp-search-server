@@ -151,30 +151,33 @@ std::vector<Document> SearchServer::FindTopDocuments(const ExecutionPolicy& poli
 	{
 		return FindTopDocuments(raw_query, document_predicate);
 	}
-	const Query& query = ParseQuery(raw_query);
-
-	std::vector<Document> matched_documents = FindAllDocuments(policy, query, document_predicate);
-
-
-	sort(policy, matched_documents.begin(), matched_documents.end(), [](const Document& lhs, const Document& rhs)
-		{
-			if (std::abs(lhs.relevance - rhs.relevance) < DEVIATION)
-			{
-				return lhs.rating > rhs.rating;
-			}
-			else
-			{
-				return lhs.relevance > rhs.relevance;
-			}
-		});
-
-
-	if (matched_documents.size() > MAX_RESULT_DOCUMENT_COUNT)
+	else
 	{
-		matched_documents.resize(MAX_RESULT_DOCUMENT_COUNT);
-	}
+		const Query& query = ParseQuery(raw_query);
 
-	return matched_documents;
+		std::vector<Document> matched_documents = FindAllDocuments(policy, query, document_predicate);
+
+
+		sort(policy, matched_documents.begin(), matched_documents.end(), [](const Document& lhs, const Document& rhs)
+			{
+				if (std::abs(lhs.relevance - rhs.relevance) < DEVIATION)
+				{
+					return lhs.rating > rhs.rating;
+				}
+				else
+				{
+					return lhs.relevance > rhs.relevance;
+				}
+			});
+
+
+		if (matched_documents.size() > MAX_RESULT_DOCUMENT_COUNT)
+		{
+			matched_documents.resize(MAX_RESULT_DOCUMENT_COUNT);
+		}
+
+		return matched_documents;
+	}
 }
 
 template <typename ExecutionPolicy>
