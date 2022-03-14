@@ -9,13 +9,15 @@
 #include <vector>
 #include <execution>
 
+using namespace std::string_literals;
+
 template <typename Key, typename Value>
 class ConcurrentMap {
 public:
 	static_assert(std::is_integral_v<Key>, "ConcurrentMap supports only integer keys");
 
 	explicit ConcurrentMap(size_t bucket_count)
-		: subBuckets_(bucket_count), mutexes_(bucket_count), bucket_count_(bucket_count)
+		: buckets(bucket_count)
 	{}
 
 	struct Access
@@ -27,39 +29,46 @@ public:
 	Access operator[](const Key& key)
 	{
 		const uint64_t dict_num = GetDictionaryNumber(key);
-
-		return Access{ std::lock_guard<std::mutex>(mutexes_[dict_num]), subBuckets_[dict_num][key] };
+        
+        auto& bucket = buckets[dict_num];
+        
+		return Access{ std::lock_guard<std::mutex>(bucket.m), bucket.dict[key] };
 	}
 
 	void erase(const Key& key)
 	{
 		const uint64_t dict_num = GetDictionaryNumber(key);
+        auto& bucket = buckets[dict_num];
+		std::lock_guard<std::mutex> guard(bucket.m);
 
-		std::lock_guard<std::mutex> guard(mutexes_[dict_num]);
-
-		subBuckets_[dict_num].erase(key);
+		bucket.dict.erase(key);
 	}
 
 	std::map<Key, Value> BuildOrdinaryMap()
 	{
 		std::map<Key, Value> ordinaryMap;
 
-		for (size_t i = 0; i < bucket_count_; ++i)
+		for (size_t i = 0; i < buckets.size(); ++i)
 		{
-			std::lock_guard<std::mutex> guard(mutexes_[i]);
-			ordinaryMap.merge(subBuckets_[i]);
+            auto& bucket = buckets[i];
+			std::lock_guard<std::mutex> guard(bucket.m);
+			ordinaryMap.merge(bucket.dict);
 		}
 
 		return ordinaryMap;
 	}
 
 private:
-	std::vector<std::map<Key, Value>> subBuckets_;
-	std::vector<std::mutex> mutexes_;
-	size_t bucket_count_;
+    struct Bucket
+    {
+        std::map<Key, Value> dict;
+        std::mutex m;
+    };
+    
+    std::vector<Bucket> buckets;
 
 	uint64_t GetDictionaryNumber(const Key& key)
 	{
-		return static_cast<uint64_t>(key) % bucket_count_;
+		return static_cast<uint64_t>(key) % buckets.size();
 	}
 };
