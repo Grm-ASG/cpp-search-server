@@ -38,6 +38,6 @@ std::vector<Document> RequestQueue::AddFindRequest(const std::string& raw_query,
 	{
 		requests_.pop_front();
 	}
-	requests_.push_back({ raw_query, static_cast<int>(searchResult.size()) });
+	requests_.push_back({ raw_query, static_cast<int>(search_result.size()) });
 	return search_result;
 }
