@@ -9,8 +9,6 @@
 #include <vector>
 #include <execution>
 
-using namespace std::string_literals;
-
 template <typename Key, typename Value>
 class ConcurrentMap {
 public:
@@ -30,7 +28,7 @@ public:
 	{
 		const uint64_t dict_num = GetDictionaryNumber(key);
         
-        auto& bucket = buckets[dict_num];
+        	auto& bucket = buckets[dict_num];
         
 		return Access{ std::lock_guard<std::mutex>(bucket.m), bucket.dict[key] };
 	}
@@ -38,7 +36,7 @@ public:
 	void erase(const Key& key)
 	{
 		const uint64_t dict_num = GetDictionaryNumber(key);
-        auto& bucket = buckets[dict_num];
+        	auto& bucket = buckets[dict_num];
 		std::lock_guard<std::mutex> guard(bucket.m);
 
 		bucket.dict.erase(key);
@@ -50,7 +48,7 @@ public:
 
 		for (size_t i = 0; i < buckets.size(); ++i)
 		{
-            auto& bucket = buckets[i];
+            		auto& bucket = buckets[i];
 			std::lock_guard<std::mutex> guard(bucket.m);
 			ordinaryMap.merge(bucket.dict);
 		}
