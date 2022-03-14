@@ -22,7 +22,7 @@ int RequestQueue::GetNoResultRequests() const
 {
 	return (std::accumulate(requests_.begin(), requests_.end(), 0, [](int sum, const QueryResult& elem)
 		{
-			if (elem.numOfResults == 0)
+			if (elem.num_of_results == 0)
 			{
 				++sum;
 			}
