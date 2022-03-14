@@ -4,12 +4,12 @@ RequestQueue::RequestQueue(const SearchServer& search_server)
 	: server_(search_server)
 {}
 
-std::vector<Document> RequestQueue::AddFindRequest(const std::string& raw_query, DocumentStatus doc_status)
+std::vector<Document> RequestQueue::AddFindRequest(const std::string& raw_query, DocumentStatus status)
 {
 	return (AddFindRequest(raw_query,
-		[doc_status](int document_id, DocumentStatus document_status, int rating)
+		[status](int document_id, DocumentStatus document_status, int rating)
 		{
-			return doc_status == document_status;
+			return status == document_status;
 		}));
 }
 
