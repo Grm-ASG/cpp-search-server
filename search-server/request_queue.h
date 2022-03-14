@@ -23,7 +23,7 @@ private:
 	struct QueryResult
 	{
 		std::string query;
-		int numOfResults;
+		int num_of_results;
 	};
 	const SearchServer& server_;
 	std::deque<QueryResult> requests_;
